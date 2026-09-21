@@ -22,100 +22,100 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Tests unitarios de la capa de servicio. El repositorio se mockea con Mockito: no se
- * levanta contexto de Spring ni base de datos, tal y como exige el boletin.
+ * Tests unitarios de la capa de servicio. El repositorio se mockea con Mockito: no se levanta
+ * contexto de Spring ni base de datos, tal y como exige el boletin.
  */
 @ExtendWith(MockitoExtension.class)
 class TaskServiceImplTest {
 
-    @Mock private TaskRepository taskRepository;
+  @Mock private TaskRepository taskRepository;
 
-    private TaskService taskService;
+  private TaskService taskService;
 
-    @BeforeEach
-    void setUp() {
-        taskService = new TaskServiceImpl(taskRepository);
-    }
+  @BeforeEach
+  void setUp() {
+    taskService = new TaskServiceImpl(taskRepository);
+  }
 
-    private Task tareaDeEjemplo(Long id) {
-        return new Task(
-                id,
-                "Entregar boletin",
-                "Descripcion",
-                EstadoTarea.PENDIENTE,
-                PrioridadTarea.ALTA,
-                LocalDate.now().plusDays(5));
-    }
+  private Task tareaDeEjemplo(Long id) {
+    return new Task(
+        id,
+        "Entregar boletin",
+        "Descripcion",
+        EstadoTarea.PENDIENTE,
+        PrioridadTarea.ALTA,
+        LocalDate.now().plusDays(5));
+  }
 
-    @Test
-    void crearGuardaLaTareaConIdNulo() {
-        Task nueva = tareaDeEjemplo(null);
-        Task guardada = tareaDeEjemplo(1L);
-        when(taskRepository.save(any(Task.class))).thenReturn(guardada);
+  @Test
+  void crearGuardaLaTareaConIdNulo() {
+    Task nueva = tareaDeEjemplo(null);
+    Task guardada = tareaDeEjemplo(1L);
+    when(taskRepository.save(any(Task.class))).thenReturn(guardada);
 
-        Task resultado = taskService.crear(nueva);
+    Task resultado = taskService.crear(nueva);
 
-        assertThat(resultado.getId()).isEqualTo(1L);
-        verify(taskRepository, times(1)).save(any(Task.class));
-    }
+    assertThat(resultado.getId()).isEqualTo(1L);
+    verify(taskRepository, times(1)).save(any(Task.class));
+  }
 
-    @Test
-    void obtenerPorIdLanzaExcepcionSiNoExiste() {
-        when(taskRepository.findById(99L)).thenReturn(Optional.empty());
+  @Test
+  void obtenerPorIdLanzaExcepcionSiNoExiste() {
+    when(taskRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> taskService.obtenerPorId(99L))
-                .isInstanceOf(TaskNotFoundException.class)
-                .hasMessageContaining("99");
-    }
+    assertThatThrownBy(() -> taskService.obtenerPorId(99L))
+        .isInstanceOf(TaskNotFoundException.class)
+        .hasMessageContaining("99");
+  }
 
-    @Test
-    void actualizarTareaInexistenteLanzaExcepcion() {
-        when(taskRepository.findById(42L)).thenReturn(Optional.empty());
-        Task datos = tareaDeEjemplo(null);
+  @Test
+  void actualizarTareaInexistenteLanzaExcepcion() {
+    when(taskRepository.findById(42L)).thenReturn(Optional.empty());
+    Task datos = tareaDeEjemplo(null);
 
-        assertThatThrownBy(() -> taskService.actualizar(42L, datos))
-                .isInstanceOf(TaskNotFoundException.class);
+    assertThatThrownBy(() -> taskService.actualizar(42L, datos))
+        .isInstanceOf(TaskNotFoundException.class);
 
-        verify(taskRepository, never()).save(any(Task.class));
-    }
+    verify(taskRepository, never()).save(any(Task.class));
+  }
 
-    @Test
-    void actualizarModificaLosCamposDeLaTareaExistente() {
-        Task existente = tareaDeEjemplo(1L);
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(existente));
-        when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
+  @Test
+  void actualizarModificaLosCamposDeLaTareaExistente() {
+    Task existente = tareaDeEjemplo(1L);
+    when(taskRepository.findById(1L)).thenReturn(Optional.of(existente));
+    when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Task datosNuevos =
-                new Task(
-                        null,
-                        "Titulo actualizado",
-                        "Nueva descripcion",
-                        EstadoTarea.COMPLETADA,
-                        PrioridadTarea.BAJA,
-                        LocalDate.now().plusDays(10));
+    Task datosNuevos =
+        new Task(
+            null,
+            "Titulo actualizado",
+            "Nueva descripcion",
+            EstadoTarea.COMPLETADA,
+            PrioridadTarea.BAJA,
+            LocalDate.now().plusDays(10));
 
-        Task resultado = taskService.actualizar(1L, datosNuevos);
+    Task resultado = taskService.actualizar(1L, datosNuevos);
 
-        assertThat(resultado.getTitulo()).isEqualTo("Titulo actualizado");
-        assertThat(resultado.getEstado()).isEqualTo(EstadoTarea.COMPLETADA);
-        assertThat(resultado.getPrioridad()).isEqualTo(PrioridadTarea.BAJA);
-    }
+    assertThat(resultado.getTitulo()).isEqualTo("Titulo actualizado");
+    assertThat(resultado.getEstado()).isEqualTo(EstadoTarea.COMPLETADA);
+    assertThat(resultado.getPrioridad()).isEqualTo(PrioridadTarea.BAJA);
+  }
 
-    @Test
-    void eliminarTareaInexistenteLanzaExcepcionYNoBorraNada() {
-        when(taskRepository.existsById(7L)).thenReturn(false);
+  @Test
+  void eliminarTareaInexistenteLanzaExcepcionYNoBorraNada() {
+    when(taskRepository.existsById(7L)).thenReturn(false);
 
-        assertThatThrownBy(() -> taskService.eliminar(7L)).isInstanceOf(TaskNotFoundException.class);
+    assertThatThrownBy(() -> taskService.eliminar(7L)).isInstanceOf(TaskNotFoundException.class);
 
-        verify(taskRepository, never()).deleteById(any());
-    }
+    verify(taskRepository, never()).deleteById(any());
+  }
 
-    @Test
-    void eliminarBorraLaTareaCuandoExiste() {
-        when(taskRepository.existsById(1L)).thenReturn(true);
+  @Test
+  void eliminarBorraLaTareaCuandoExiste() {
+    when(taskRepository.existsById(1L)).thenReturn(true);
 
-        taskService.eliminar(1L);
+    taskService.eliminar(1L);
 
-        verify(taskRepository, times(1)).deleteById(1L);
-    }
+    verify(taskRepository, times(1)).deleteById(1L);
+  }
 }

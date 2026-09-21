@@ -6,15 +6,15 @@ import java.util.List;
 
 public interface TaskService {
 
-    List<Task> obtenerTodas();
+  List<Task> obtenerTodas();
 
-    List<Task> obtenerPorEstado(EstadoTarea estado);
+  List<Task> obtenerPorEstado(EstadoTarea estado);
 
-    Task obtenerPorId(Long id);
+  Task obtenerPorId(Long id);
 
-    Task crear(Task task);
+  Task crear(Task task);
 
-    Task actualizar(Long id, Task datosActualizados);
+  Task actualizar(Long id, Task datosActualizados);
 
-    void eliminar(Long id);
+  void eliminar(Long id);
 }
