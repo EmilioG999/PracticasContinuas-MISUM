@@ -1,5 +1,6 @@
 package com.boletin1.tareas.controller;
 
+import com.boletin1.tareas.model.EstadoTarea;
 import com.boletin1.tareas.model.Task;
 import com.boletin1.tareas.service.TaskService;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,7 +28,10 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> obtenerTodas() {
+    public List<Task> obtenerTodas(@RequestParam(required = false) EstadoTarea estado) {
+        if (estado != null) {
+            return taskService.obtenerPorEstado(estado);
+        }
         return taskService.obtenerTodas();
     }
 

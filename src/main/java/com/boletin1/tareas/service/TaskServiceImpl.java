@@ -1,6 +1,7 @@
 package com.boletin1.tareas.service;
 
 import com.boletin1.tareas.exception.TaskNotFoundException;
+import com.boletin1.tareas.model.EstadoTarea;
 import com.boletin1.tareas.model.Task;
 import com.boletin1.tareas.repository.TaskRepository;
 import java.util.List;
@@ -18,6 +19,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> obtenerTodas() {
         return taskRepository.findAll();
+    }
+
+    @Override
+    public List<Task> obtenerPorEstado(EstadoTarea estado) {
+        return taskRepository.findByEstado(estado);
     }
 
     @Override
