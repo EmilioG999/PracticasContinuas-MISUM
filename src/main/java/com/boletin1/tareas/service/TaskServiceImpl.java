@@ -4,7 +4,8 @@ import com.boletin1.tareas.exception.TaskNotFoundException;
 import com.boletin1.tareas.model.EstadoTarea;
 import com.boletin1.tareas.model.Task;
 import com.boletin1.tareas.repository.TaskRepository;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,13 +18,13 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Task> obtenerTodas() {
-    return taskRepository.findAll();
+  public Page<Task> obtenerTodas(Pageable pageable) {
+    return taskRepository.findAll(pageable);
   }
 
   @Override
-  public List<Task> obtenerPorEstado(EstadoTarea estado) {
-    return taskRepository.findByEstado(estado);
+  public Page<Task> obtenerPorEstado(EstadoTarea estado, Pageable pageable) {
+    return taskRepository.findByEstado(estado, pageable);
   }
 
   @Override

@@ -5,7 +5,9 @@ import com.boletin1.tareas.model.Task;
 import com.boletin1.tareas.service.TaskService;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +30,13 @@ public class TaskController {
   }
 
   @GetMapping
-  public List<Task> obtenerTodas(@RequestParam(required = false) EstadoTarea estado) {
+  public Page<Task> obtenerTodas(
+      @RequestParam(required = false) EstadoTarea estado,
+      @PageableDefault(size = 10) Pageable pageable) {
     if (estado != null) {
-      return taskService.obtenerPorEstado(estado);
+      return taskService.obtenerPorEstado(estado, pageable);
     }
-    return taskService.obtenerTodas();
+    return taskService.obtenerTodas(pageable);
   }
 
   @GetMapping("/{id}")

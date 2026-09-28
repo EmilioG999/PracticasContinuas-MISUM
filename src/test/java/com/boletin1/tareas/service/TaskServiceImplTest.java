@@ -14,12 +14,17 @@ import com.boletin1.tareas.model.PrioridadTarea;
 import com.boletin1.tareas.model.Task;
 import com.boletin1.tareas.repository.TaskRepository;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Tests unitarios de la capa de servicio. El repositorio se mockea con Mockito: no se levanta
@@ -117,5 +122,32 @@ class TaskServiceImplTest {
     taskService.eliminar(1L);
 
     verify(taskRepository, times(1)).deleteById(1L);
+  }
+
+  @Test
+  void obtenerTodasDevuelveLaPaginaSolicitadaAlRepositorio() {
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Task> pagina =
+        new PageImpl<>(List.of(tareaDeEjemplo(1L), tareaDeEjemplo(2L)), pageable, 2);
+    when(taskRepository.findAll(pageable)).thenReturn(pagina);
+
+    Page<Task> resultado = taskService.obtenerTodas(pageable);
+
+    assertThat(resultado.getTotalElements()).isEqualTo(2);
+    assertThat(resultado.getContent()).hasSize(2);
+    verify(taskRepository, times(1)).findAll(pageable);
+  }
+
+  @Test
+  void obtenerPorEstadoDevuelveSoloLaPaginaFiltradaPorEseEstado() {
+    Pageable pageable = PageRequest.of(0, 5);
+    Page<Task> pagina = new PageImpl<>(List.of(tareaDeEjemplo(3L)), pageable, 1);
+    when(taskRepository.findByEstado(EstadoTarea.COMPLETADA, pageable)).thenReturn(pagina);
+
+    Page<Task> resultado = taskService.obtenerPorEstado(EstadoTarea.COMPLETADA, pageable);
+
+    assertThat(resultado.getTotalElements()).isEqualTo(1);
+    verify(taskRepository, times(1)).findByEstado(EstadoTarea.COMPLETADA, pageable);
+    verify(taskRepository, never()).findAll(any(Pageable.class));
   }
 }
