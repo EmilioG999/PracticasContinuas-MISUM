@@ -1,6 +1,7 @@
 package com.boletin1.tareas.controller;
 
 import com.boletin1.tareas.model.EstadoTarea;
+import com.boletin1.tareas.model.PrioridadTarea;
 import com.boletin1.tareas.model.Task;
 import com.boletin1.tareas.service.TaskService;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -32,9 +34,13 @@ public class TaskController {
   @GetMapping
   public Page<Task> obtenerTodas(
       @RequestParam(required = false) EstadoTarea estado,
+      @RequestParam(required = false) PrioridadTarea prioridad,
       @PageableDefault(size = 10) Pageable pageable) {
     if (estado != null) {
       return taskService.obtenerPorEstado(estado, pageable);
+    }
+    if (prioridad != null) {
+      return taskService.obtenerPorPrioridad(prioridad, pageable);
     }
     return taskService.obtenerTodas(pageable);
   }

@@ -2,6 +2,7 @@ package com.boletin1.tareas.service;
 
 import com.boletin1.tareas.exception.TaskNotFoundException;
 import com.boletin1.tareas.model.EstadoTarea;
+import com.boletin1.tareas.model.PrioridadTarea;
 import com.boletin1.tareas.model.Task;
 import com.boletin1.tareas.repository.TaskRepository;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,11 @@ public class TaskServiceImpl implements TaskService {
   @Override
   public Page<Task> obtenerPorEstado(EstadoTarea estado, Pageable pageable) {
     return taskRepository.findByEstado(estado, pageable);
+  }
+
+  @Override
+  public Page<Task> obtenerPorPrioridad(PrioridadTarea prioridad, Pageable pageable) {
+    return taskRepository.findByPrioridad(prioridad, pageable);
   }
 
   @Override

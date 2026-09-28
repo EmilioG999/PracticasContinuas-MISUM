@@ -1,6 +1,7 @@
 package com.boletin1.tareas.service;
 
 import com.boletin1.tareas.model.EstadoTarea;
+import com.boletin1.tareas.model.PrioridadTarea;
 import com.boletin1.tareas.model.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,8 @@ public interface TaskService {
   Page<Task> obtenerTodas(Pageable pageable);
 
   Page<Task> obtenerPorEstado(EstadoTarea estado, Pageable pageable);
+
+  Page<Task> obtenerPorPrioridad(PrioridadTarea prioridad, Pageable pageable);
 
   Page<Task> buscarPorTitulo(String titulo, Pageable pageable);
 

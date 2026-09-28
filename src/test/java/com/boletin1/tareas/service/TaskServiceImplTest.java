@@ -184,4 +184,74 @@ class TaskServiceImplTest {
 
     verify(taskRepository, never()).findByTituloContainingIgnoreCase(any(), any());
   }
+
+  @Test
+  void obtenerPorPrioridadDevuelveLaPrimeraPaginaSolicitada() {
+    Pageable pageable = PageRequest.of(0, 2);
+    List<Task> tareas = List.of(tareaDeEjemplo(1L), tareaDeEjemplo(2L));
+    Page<Task> pagina = new PageImpl<>(tareas, pageable, 2);
+    when(taskRepository.findByPrioridad(PrioridadTarea.ALTA, pageable)).thenReturn(pagina);
+
+    Page<Task> resultado = taskService.obtenerPorPrioridad(PrioridadTarea.ALTA, pageable);
+
+    assertThat(resultado.getNumber()).isZero();
+    assertThat(resultado.getSize()).isEqualTo(2);
+    assertThat(resultado.getContent()).containsExactlyElementsOf(tareas);
+    assertThat(resultado.getTotalElements()).isEqualTo(2);
+    verify(taskRepository, times(1)).findByPrioridad(PrioridadTarea.ALTA, pageable);
+    verify(taskRepository, never()).findAll(any(Pageable.class));
+  }
+
+  @Test
+  void obtenerPorPrioridadDevuelveLaSegundaPaginaSolicitada() {
+    Pageable pageable = PageRequest.of(1, 2);
+    Page<Task> pagina =
+        new PageImpl<>(List.of(tareaDeEjemplo(3L), tareaDeEjemplo(4L)), pageable, 4);
+    when(taskRepository.findByPrioridad(PrioridadTarea.ALTA, pageable)).thenReturn(pagina);
+
+    Page<Task> resultado = taskService.obtenerPorPrioridad(PrioridadTarea.ALTA, pageable);
+
+    assertThat(resultado.getNumber()).isEqualTo(1);
+    verify(taskRepository, times(1)).findByPrioridad(PrioridadTarea.ALTA, pageable);
+  }
+
+  @Test
+  void obtenerPorPrioridadRespetaElTamanoPersonalizadoDePagina() {
+    Pageable pageable = PageRequest.of(0, 5);
+    Page<Task> pagina = new PageImpl<>(List.of(tareaDeEjemplo(1L)), pageable, 1);
+    when(taskRepository.findByPrioridad(PrioridadTarea.ALTA, pageable)).thenReturn(pagina);
+
+    Page<Task> resultado = taskService.obtenerPorPrioridad(PrioridadTarea.ALTA, pageable);
+
+    assertThat(resultado.getSize()).isEqualTo(5);
+    verify(taskRepository, times(1)).findByPrioridad(PrioridadTarea.ALTA, pageable);
+  }
+
+  @Test
+  void obtenerPorPrioridadMantieneElTotalAunqueLaPaginaTengaMenosElementos() {
+    Pageable pageable = PageRequest.of(0, 2);
+    Page<Task> pagina =
+        new PageImpl<>(List.of(tareaDeEjemplo(1L), tareaDeEjemplo(2L)), pageable, 5);
+    when(taskRepository.findByPrioridad(PrioridadTarea.ALTA, pageable)).thenReturn(pagina);
+
+    Page<Task> resultado = taskService.obtenerPorPrioridad(PrioridadTarea.ALTA, pageable);
+
+    assertThat(resultado.getTotalElements()).isEqualTo(5);
+    assertThat(resultado.getTotalPages()).isEqualTo(3);
+    assertThat(resultado.getContent()).hasSize(2);
+    verify(taskRepository, times(1)).findByPrioridad(PrioridadTarea.ALTA, pageable);
+  }
+
+  @Test
+  void obtenerPorPrioridadDevuelvePaginaVaciaSiNoHayCoincidencias() {
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Task> paginaVacia = new PageImpl<>(List.of(), pageable, 0);
+    when(taskRepository.findByPrioridad(PrioridadTarea.BAJA, pageable)).thenReturn(paginaVacia);
+
+    Page<Task> resultado = taskService.obtenerPorPrioridad(PrioridadTarea.BAJA, pageable);
+
+    assertThat(resultado.getContent()).isEmpty();
+    assertThat(resultado.getTotalElements()).isZero();
+    verify(taskRepository, times(1)).findByPrioridad(PrioridadTarea.BAJA, pageable);
+  }
 }
