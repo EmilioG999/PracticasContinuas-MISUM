@@ -2,13 +2,14 @@ package com.boletin1.tareas.service;
 
 import com.boletin1.tareas.model.EstadoTarea;
 import com.boletin1.tareas.model.Task;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface TaskService {
 
-  List<Task> obtenerTodas();
+  Page<Task> obtenerTodas(Pageable pageable);
 
-  List<Task> obtenerPorEstado(EstadoTarea estado);
+  Page<Task> obtenerPorEstado(EstadoTarea estado, Pageable pageable);
 
   Task obtenerPorId(Long id);
 
