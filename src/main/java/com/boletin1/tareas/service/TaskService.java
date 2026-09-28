@@ -11,6 +11,8 @@ public interface TaskService {
 
   Page<Task> obtenerPorEstado(EstadoTarea estado, Pageable pageable);
 
+  Page<Task> buscarPorTitulo(String titulo, Pageable pageable);
+
   Task obtenerPorId(Long id);
 
   Task crear(Task task);

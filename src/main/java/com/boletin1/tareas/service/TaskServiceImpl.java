@@ -28,6 +28,14 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  public Page<Task> buscarPorTitulo(String titulo, Pageable pageable) {
+    if (titulo == null || titulo.isBlank()) {
+      throw new IllegalArgumentException("El parametro 'titulo' no puede estar vacio");
+    }
+    return taskRepository.findByTituloContainingIgnoreCase(titulo, pageable);
+  }
+
+  @Override
   public Task obtenerPorId(Long id) {
     return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
   }

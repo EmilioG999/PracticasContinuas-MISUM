@@ -39,6 +39,12 @@ public class TaskController {
     return taskService.obtenerTodas(pageable);
   }
 
+  @GetMapping("/search")
+  public Page<Task> buscarPorTitulo(
+      @RequestParam String titulo, @PageableDefault(size = 10) Pageable pageable) {
+    return taskService.buscarPorTitulo(titulo, pageable);
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<Task> obtenerPorId(@PathVariable Long id) {
     return ResponseEntity.ok(taskService.obtenerPorId(id));
