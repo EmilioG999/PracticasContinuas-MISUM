@@ -150,4 +150,38 @@ class TaskServiceImplTest {
     verify(taskRepository, times(1)).findByEstado(EstadoTarea.COMPLETADA, pageable);
     verify(taskRepository, never()).findAll(any(Pageable.class));
   }
+
+  @Test
+  void buscarPorTituloDevuelveLaPaginaConCoincidencias() {
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Task> pagina = new PageImpl<>(List.of(tareaDeEjemplo(1L)), pageable, 1);
+    when(taskRepository.findByTituloContainingIgnoreCase("boletin", pageable)).thenReturn(pagina);
+
+    Page<Task> resultado = taskService.buscarPorTitulo("boletin", pageable);
+
+    assertThat(resultado.getTotalElements()).isEqualTo(1);
+    verify(taskRepository, times(1)).findByTituloContainingIgnoreCase("boletin", pageable);
+  }
+
+  @Test
+  void buscarPorTituloDevuelvePaginaVaciaSiNoHayCoincidencias() {
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Task> paginaVacia = new PageImpl<>(List.of(), pageable, 0);
+    when(taskRepository.findByTituloContainingIgnoreCase("inexistente", pageable))
+        .thenReturn(paginaVacia);
+
+    Page<Task> resultado = taskService.buscarPorTitulo("inexistente", pageable);
+
+    assertThat(resultado.getContent()).isEmpty();
+  }
+
+  @Test
+  void buscarPorTituloLanzaExcepcionSiElTituloEstaVacio() {
+    Pageable pageable = PageRequest.of(0, 10);
+
+    assertThatThrownBy(() -> taskService.buscarPorTitulo("  ", pageable))
+        .isInstanceOf(IllegalArgumentException.class);
+
+    verify(taskRepository, never()).findByTituloContainingIgnoreCase(any(), any());
+  }
 }
