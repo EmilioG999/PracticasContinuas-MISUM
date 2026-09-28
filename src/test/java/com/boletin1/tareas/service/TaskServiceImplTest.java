@@ -184,4 +184,31 @@ class TaskServiceImplTest {
 
     verify(taskRepository, never()).findByTituloContainingIgnoreCase(any(), any());
   }
+
+  @Test
+  void obtenerPorPrioridadDevuelveTareasConEsaPrioridad() {
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Task> pagina = new PageImpl<>(List.of(tareaDeEjemplo(1L), tareaDeEjemplo(2L)), pageable, 2);
+    when(taskRepository.findByPrioridad(PrioridadTarea.ALTA, pageable)).thenReturn(pagina);
+
+    Page<Task> resultado = taskService.obtenerPorPrioridad(PrioridadTarea.ALTA, pageable);
+
+    assertThat(resultado.getTotalElements()).isEqualTo(2);
+    assertThat(resultado.getContent()).hasSize(2);
+    verify(taskRepository, times(1)).findByPrioridad(PrioridadTarea.ALTA, pageable);
+    verify(taskRepository, never()).findAll(any(Pageable.class));
+  }
+
+  @Test
+  void obtenerPorPrioridadDevuelvePaginaVaciaSiNoHayCoincidencias() {
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Task> paginaVacia = new PageImpl<>(List.of(), pageable, 0);
+    when(taskRepository.findByPrioridad(PrioridadTarea.BAJA, pageable)).thenReturn(paginaVacia);
+
+    Page<Task> resultado = taskService.obtenerPorPrioridad(PrioridadTarea.BAJA, pageable);
+
+    assertThat(resultado.getContent()).isEmpty();
+    assertThat(resultado.getTotalElements()).isZero();
+    verify(taskRepository, times(1)).findByPrioridad(PrioridadTarea.BAJA, pageable);
+  }
 }
