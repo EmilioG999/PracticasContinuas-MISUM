@@ -11,13 +11,14 @@ API REST de gestión de tareas desarrollada con Spring Boot 3 y Java 21, como pa
 
 - Java 21
 - Spring Boot 3 (Web, Data JPA, Validation)
-- H2 (base de datos en memoria)
+- PostgreSQL 16
+- Docker y Docker Compose
 - Maven
 - JUnit 5
 
 ## Puesta en marcha
 
-Requisitos: JDK 21 y Maven.
+Requisitos: JDK 21 y Maven y una instancia de PostgreSQL accesible.
 
 ```bash
 mvn clean package
@@ -25,6 +26,57 @@ java -jar target/tareas-api-0.0.1-SNAPSHOT.jar
 ```
 
 La API arranca en `http://localhost:8080`.
+
+## Puesta en marcha con Docker
+
+Requisitos: Docker y Docker Compose.
+
+1. Copia la plantilla de variables de entorno y ajusta la contraseña:
+
+```bash
+cp .env.example .env
+```
+
+2. Levanta la API junto a PostgreSQL:
+
+```bash
+docker compose up --build -d
+```
+
+3. Comprueba que ambos servicios están saludables:
+
+```bash
+docker compose ps
+```
+
+4. Prueba el endpoint de salud y la API:
+
+```bash
+curl http://localhost:8080/actuator/health
+curl http://localhost:8080/api/tasks
+```
+
+5. Para parar (conservando los datos) o reiniciar desde cero:
+
+```bash
+docker compose down       # conserva el volumen de datos
+docker compose down -v    # borra también los datos
+```
+
+## Dev Container
+
+Este proyecto incluye una configuración de [Dev Container](https://containers.dev/) en `.devcontainer/devcontainer.json`, que permite desarrollar con el mismo entorno (JDK, Maven, Docker) sin instalar nada en la máquina local.
+
+1. Instala la extensión **Dev Containers** en VS Code.
+2. Abre la carpeta del proyecto en VS Code.
+3. `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**.
+4. Dentro del contenedor, levanta el stack igual que en local:
+
+```bash
+docker compose up --build
+```
+
+5. La API será accesible en `http://127.0.0.1:8080` desde el navegador de tu máquina.
 
 ## Endpoints
 
