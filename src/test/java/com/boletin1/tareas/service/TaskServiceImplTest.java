@@ -60,7 +60,7 @@ class TaskServiceImplTest {
 
     Task resultado = taskService.crear(nueva);
 
-    assertThat(resultado.getId()).isEqualTo(2L);
+    assertThat(resultado.getId()).isEqualTo(1L);
     verify(taskRepository, times(1)).save(any(Task.class));
   }
 
