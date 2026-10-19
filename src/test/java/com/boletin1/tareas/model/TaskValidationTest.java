@@ -60,8 +60,8 @@ class TaskValidationTest {
             LocalDate.now());
 
     Set<ConstraintViolation<Task>> violaciones = validator.validate(task);
-
-    assertThat(violaciones).noneMatch(v -> v.getPropertyPath().toString().equals("fechaLimite"));
+    // era noneMatch
+    assertThat(violaciones).allMatch(v -> v.getPropertyPath().toString().equals("fechaLimite"));
   }
 
   @Test
