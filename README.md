@@ -2,6 +2,7 @@
 
 API REST de gestión de tareas desarrollada con Spring Boot 3 y Java 21, como parte de la asignatura de Prácticas Continuas del máster en Ingeniería de Software (Universidad de Murcia).
 
+[![CI](https://github.com/EmilioG999/PracticasContinuas-MISUM/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/EmilioG999/PracticasContinuas-MISUM/actions/workflows/ci.yml)
 ## Autores
 
 - Manuel Chica ([@manuel-umu](https://github.com/manuel-umu))
