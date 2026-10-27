@@ -13,6 +13,7 @@ TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <title>{title}</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
 <style>
   body {{ font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; color: #1a1a1a; }}
   img {{ max-width: 100%; }}
@@ -28,6 +29,15 @@ TEMPLATE = """<!DOCTYPE html>
 <body>
 <nav><a href="{nav_back}">&larr; Indice</a></nav>
 {body}
+<script>
+  document.querySelectorAll('pre code.language-mermaid').forEach(function (block) {{
+    var div = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = block.textContent;
+    block.parentNode.replaceWith(div);
+  }});
+  mermaid.initialize({{ startOnLoad: true }});
+</script>
 </body>
 </html>
 """
